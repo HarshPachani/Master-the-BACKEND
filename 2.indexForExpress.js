@@ -8,8 +8,10 @@ const port = 5000;
 const app = express();
 
 app.get("/", (req, res) => {
-    const absolutePath = path.basename();
-    console.log(path.join(absolutePath, "/index.html"));
+    console.log(path.resolve()); //path.resolve() will return the current directory where the file is saved.
+    const pathlocation = path.resolve();
+    // console.log(path.join(pathlocation, "./index.html")); //path.join() will join the first parameterized with second's name in the end.
+    res.sendFile(path.join(pathlocation, "./index.html"));
 });
 
 app.listen(port, () => {

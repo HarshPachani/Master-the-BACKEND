@@ -1,0 +1,7 @@
+in this tutorial we will use ejs as a templating engine.
+EJS Stands for Embeded JavaScript template.
+for using it we have to first create views folder.
+
+-folder structure
+1. views is used for business logic.
+2. public is used for static files.

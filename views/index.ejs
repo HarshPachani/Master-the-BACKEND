@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- IF file is not found in this folder, then it will find the file in public because of we declared app.use function in 3.UseOfEJS.js file. -->
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Home</h1>
+    <!-- in ejs locals is a pure object threw which we can access it's corresponding object values. -->
+    <p>Hello <%= locals.name %> </p>
+    <script src="script.js"></script>
+</body>
+</html>
