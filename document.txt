@@ -1,5 +1,6 @@
 in this tutorial we will use ejs as a templating engine.
 EJS Stands for Embeded JavaScript template.
+syntax: <%= locals.variable %>
 for using it we have to first create views folder.
 
 -folder structure
