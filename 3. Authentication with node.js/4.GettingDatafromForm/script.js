@@ -8,6 +8,9 @@ import mongoose from "mongoose";
 //for parsing the cookie or accessing the cookies from client side.
 import cookieParser from "cookie-parser";
 
+//for accessing the id from the database.
+import jwt from "jsonwebtoken";
+
 //To connect with mongoose.
 mongoose.connect("mongodb://127.0.0.1:27017", {
     dbName: "backend",
@@ -18,13 +21,13 @@ mongoose.connect("mongodb://127.0.0.1:27017", {
  .catch((e) => console.log(e));
 
 //To Add a structure of the data into mongo.
-const messageSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     name: String,
     email: String,
 });
 
 //to create collection (model)
-const Message = mongoose.model("Message", messageSchema);
+const User = mongoose.model("user", userSchema);
 
 
 const app = express();
@@ -43,56 +46,61 @@ app.use(express.urlencoded({ encoded: true }));
 //for accessing the cookie from client side.
 app.use(cookieParser());
 
-app.get("/", (req, res) => {
+
+//Here next means, we can add multiple handlers in app.get() method and in "/" this path we have added this function 
+//It means when the user is already authenticated then call the next hander which is (req, res)=> {} handler. and if it does not then render a login page.
+const isAuthenticated = async (req, res, next) => {
     console.log(req.cookies);
     // const token = req.cookie.token;
     // or
     const { token } = req.cookies;
     if(token) {
-        res.render("logout");
+        //The second parameter is the same key we passed to encode it.
+        const decoded = jwt.verify(token, "sdjdljdfjkfj");
+
+        // console.log(decoded);
+        req.user = await User.findById(decoded._id);
+
+        next();
     } 
     else {
         res.render("login");
     }
+}
+
+app.get("/", isAuthenticated, (req, res) => {
+    console.log(req.user);
+    res.render("logout", {name: req.user.name});
 });
 
-app.get("/success", (req, res) => {
-    res.render("success");
-});
+app.get("/logout", (req, res) => {
 
-app.get("/users", (req, res) => {
-    res.json({
-        users,
-    });
-});
-
-app.get("/add", async (req, res) => {
-    await Message.create({name: "Harsh", email: "Sample@gmail.com"})
-    res.send("Data Added Successfully!");
-})
-
-app.post("/contact", async (req, res) => {
-    // console.log(req.body);
-    // console.log(req.body.name);
-    // console.log(req.body.email);
-
-    //Instead of doing this, we can use destructuring.
-    // await Message.create({name: req.body.name, email: req.body.email});
-    
-    //This is destructuring.
-    const {name, email} = req.body;
-    await Message.create({name, email}); //if the key value pair are same then we don't need to declare the key.
-    res.redirect("/success");
-});
-
-app.post("/login", (req, res) => {
     //to set the cookie in the browser.
-    res.cookie("token", "iamin", {
+    res.cookie("token", "null", {
+        httpOnly: true,
+        expires: new Date(Date.now()),
+    });
+    res.redirect("/");
+});
+
+app.post("/login", async (req, res) => {
+    console.log(req.body);
+
+    const {name, email} = req.body;
+
+    //add data into database and store id into the user variable, but we directly cannot access the id, so install npm i jasonwebtoken for it.
+    const user = await User.create({name, email});
+
+    //Here the last parameter is a secret key.
+    const token = jwt.sign({_id: user._id}, "sdjdljdfjkfj");
+    console.log(token);
+    //to set the cookie in the browser.
+    res.cookie("token", user._id,{
         httpOnly: true,
         expires: new Date(Date.now() + 60 * 1000)
     });
     res.redirect("/");
-})
+});
 
 app.listen(port, () => {
     console.log(`The Server is working on port http://localhost:${port}`);
