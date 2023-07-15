@@ -5,9 +5,6 @@ import path from "path";
 //for db operations.
 import mongoose from "mongoose";
 
-//for parsing the cookie or accessing the cookies from client side.
-import cookieParser from "cookie-parser";
-
 //To connect with mongoose.
 mongoose.connect("mongodb://127.0.0.1:27017", {
     dbName: "backend",
@@ -40,20 +37,8 @@ app.use(express.static(path.join(path.resolve(), "public")));
 //for accessing the data submitted by user with form.
 app.use(express.urlencoded({ encoded: true }));
 
-//for accessing the cookie from client side.
-app.use(cookieParser());
-
 app.get("/", (req, res) => {
-    console.log(req.cookies);
-    // const token = req.cookie.token;
-    // or
-    const { token } = req.cookies;
-    if(token) {
-        res.render("logout");
-    } 
-    else {
-        res.render("login");
-    }
+    res.render("index");
 });
 
 app.get("/success", (req, res) => {
@@ -84,15 +69,6 @@ app.post("/contact", async (req, res) => {
     await Message.create({name, email}); //if the key value pair are same then we don't need to declare the key.
     res.redirect("/success");
 });
-
-app.post("/login", (req, res) => {
-    //to set the cookie in the browser.
-    res.cookie("token", "iamin", {
-        httpOnly: true,
-        expires: new Date(Date.now() + 60 * 1000)
-    });
-    res.redirect("/");
-})
 
 app.listen(port, () => {
     console.log(`The Server is working on port http://localhost:${port}`);
