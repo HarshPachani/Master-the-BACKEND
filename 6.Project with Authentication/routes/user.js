@@ -1,5 +1,6 @@
 import express from "express";
-import { getAllUsers, getUserDetails, registerUser, loginUser } from "../controllers/user.js";
+import { getAllUsers, registerUser, loginUser, getMyProfile, logoutUser } from "../controllers/user.js";
+import { isAuthenticated } from "../middlewares/auth.js";
 
 const router = express.Router();
 
@@ -8,8 +9,7 @@ router.get("/all", getAllUsers);
 router.post("/new", registerUser);
 router.post("/login", loginUser);
 
-router
-    .route("/userid/:id")
-    .get(getUserDetails);
+router.get("/logout", logoutUser);
+router.get("/me", isAuthenticated, getMyProfile);
 
 export default router;
