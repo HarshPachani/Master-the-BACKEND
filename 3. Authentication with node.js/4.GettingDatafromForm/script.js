@@ -56,9 +56,9 @@ const isAuthenticated = async (req, res, next) => {
     const { token } = req.cookies;
     if(token) {
         //The second parameter is the same key we passed to encode it.
-        const decoded = jwt.verify(token, "sdjdljdfjkfj");
+        const decoded = jwt.verify(token, "HarshPachani");
 
-        // console.log(decoded);
+        console.log(decoded);
         req.user = await User.findById(decoded._id);
 
         next();
@@ -92,8 +92,9 @@ app.post("/login", async (req, res) => {
     const user = await User.create({name, email});
 
     //Here the last parameter is a secret key.
-    const token = jwt.sign({_id: user._id}, "sdjdljdfjkfj");
+    const token = jwt.sign({_id: user._id}, "HarshPachani");
     console.log(token);
+    
     //to set the cookie in the browser.
     res.cookie("token", user._id,{
         httpOnly: true,
