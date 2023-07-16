@@ -1,66 +1,39 @@
 import { User } from "../models/user.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const getAllUsers = async (req, res) => {
-    const users = await User.find({});
 
-    const keyword = req.query.keyword;
-    console.log(keyword);
-    
-    res.json({
-        success: true,
-        users,
-    })
 };
 
 export const registerUser = async (req, res) => {
-    const { name, email, password } = req.body;
+    const {name, email, password} = req.body;
 
-    const users = await User.create({
-        name, email, password
+    const User = await User.findOne({email});
+    if(User) return res.status(404).json({
+        success: false,
+        message: "User Already Exists",
     });
 
-    //201 status code is use for create.
-    res.status(201).json({
+    //first hash the password then send it to db.
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.create({name, email, password: hashedPassword});
+
+    const token = jwt.sign({_id: User._id}, process.env.JWT_SECRET);
+
+    res.status(201).cookie("token", token, {
+        httpOnly: true,        
+        maxAge: 15 * 60 * 1000, //expiry time = 15 minutes. 15 * minutes * second(1) 
+    }).json({
         success: true,
-        message: "Registered Successfully",
+        message: "Registered Successfully!",
     });
 };
 
-export const specialFunc = (req, res) => {
-    res.json({
-        success: true,
-        message: "Just Joking",
-    });
-};
-
-//This is dynamic URL where first userid is same but next will consider as an id in this case.
-// userid/asdf
-// userid/harsh
-//NOTE: always keep dynamic route at last.
 export const getUserDetails = async (req, res) => {
-    // const { id } = req.query;
-
-    const { id } = req.params;
-
-    const user = await User.findById(id);
-
-    console.log(req.params);
-    res.json({
-        success: true,
-        user,
-    });
+    
 };
 
-export const putUserDetails = async(req, res) => {
-    res.json({
-        success: true,
-        message: "User Updated Successfully",
-    });
-}
+export const loginUser = async(req, res, next) => {
 
-export const deleteUserDetails = async(req, res) => {
-    res.json({
-        success: true,
-        message: "User Deleted Successfully",
-    });
-}
+};

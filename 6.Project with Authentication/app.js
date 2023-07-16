@@ -11,7 +11,7 @@ config({
 app.use(express.json());
 
 //Here /users is a prefix of the url, that means in user.js we don't need to add /users for all the time, it will automatically added.
-app.use("/users", userRouter);
+app.use("/api/v1/users", userRouter);
 
 
 app.get("/", (req, res) => {
