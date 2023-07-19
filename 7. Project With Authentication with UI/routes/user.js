@@ -8,6 +8,9 @@ router.post("/new", registerUser);
 router.post("/login", loginUser);
 
 router.get("/logout", logoutUser);
+router.get("/logout/?", (req, res) => {
+    res.redirect("/");
+});
 router.get("/me", isAuthenticated, getMyProfile);
 
 export default router;

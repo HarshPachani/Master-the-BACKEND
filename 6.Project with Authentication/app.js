@@ -4,6 +4,7 @@ import taskRouter from "./routes/task.js";
 import { config }  from "dotenv";
 import cookieParser from "cookie-parser";
 import { errorMiddleware } from "./middlewares/error.js";
+import path from "path";
 
 //when we transfer our app from localhost to the internet server then the url will change from localhost to the corresponding URL.
 //for that reason we use cors.

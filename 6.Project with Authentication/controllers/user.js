@@ -3,12 +3,12 @@ import bcrypt from "bcrypt";
 import { sendCookie } from "../utils/features.js";
 import ErrorHandler from "../middlewares/error.js";
 
-export const registerUser = async (req, res) => {
+export const registerUser = async (req, res, next) => {
     try {
         const {name, email, password} = req.body;
     
         const user = await User.findOne({email});
-        if(user) return next(ErrorHandler("User Already Exists!", 400));
+        if(user) return next(new ErrorHandler("User Already Exists!", 400));
     
         //first hash the password then send it to db.
         const hashedPassword = await bcrypt.hash(password, 10);
